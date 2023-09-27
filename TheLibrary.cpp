@@ -8,6 +8,7 @@ BAKKESMOD_PLUGIN(TheLibrary, "The Library", plugin_version, PLUGINTYPE_FREEPLAY)
 std::shared_ptr<CVarManagerWrapper> _globalCvarManager;
 bool libEnabled = false;
 bool bonkersEnabled = false;
+bool ballcamtoggleEnabled = false;
 bool isReplay = false;
 
 void TheLibrary::onLoad()
@@ -36,6 +37,11 @@ void TheLibrary::onLoad()
 		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
 		bonkersEnabled = cvar.getBoolValue();
 			});
+
+	cvarManager->registerCvar("ballcamtoggle_enabled", "0", "Enable Ball Cam Toggle", true, true, 0, true, 1)
+		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
+		ballcamtoggleEnabled = cvar.getBoolValue();
+			});
 }
 
 /// Load on custom training load
@@ -57,8 +63,6 @@ void TheLibrary::OnCustomTrainingLoad(std::string eventName) {
 	gameWrapper->HookEvent("Function GameEvent_Soccar_TA.ReplayPlayback.BeginState",
 		[this](std::string eventName) {
 			isReplay = true;
-			LOG("running");
-			appear();
 		});
 
 	gameWrapper->HookEvent("Function GameEvent_Soccar_TA.ReplayPlayback.EndState",

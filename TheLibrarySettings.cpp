@@ -12,7 +12,7 @@ void TheLibrary::RenderSettings() {
         enableCvar.setValue(enabled);
     }
     if (ImGui::IsItemHovered()) {
-        ImGui::SetTooltip("Toggle Cool Plugin");
+        ImGui::SetTooltip("Toggle The Library");
     }
 
     CVarWrapper timeCvar = cvarManager->getCvar("lib_time");
@@ -44,6 +44,16 @@ void TheLibrary::RenderSettings() {
     }
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("I'm not sure why you would do this to yourself");
+    }
+
+    CVarWrapper ballcamCvar = cvarManager->getCvar("ballcamtoggle_enabled");
+    if (!ballcamCvar) { return; }
+    bool ballcamToggle = ballcamCvar.getBoolValue();
+    if (ImGui::Checkbox("Automatially Toggle Ball Cam", &ballcamToggle)) {
+        ballcamCvar.setValue(ballcamToggle);
+    }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("choose whether Ball Cam automatically turns off on disappear or not");
     }
 
 }
