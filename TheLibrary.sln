@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34018.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TheLibrary", "TheLibrary.vcxproj", "{EC2C227F-905A-4D2A-8D9B-C7E3CA7A408B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC2C227F-905A-4D2A-8D9B-C7E3CA7A408B}.Release|x64.ActiveCfg = Release|x64
+		{EC2C227F-905A-4D2A-8D9B-C7E3CA7A408B}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {50F92C57-63FE-4B39-8821-D458C8774187}
+	EndGlobalSection
+EndGlobal
