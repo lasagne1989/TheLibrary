@@ -31,7 +31,9 @@ void TheLibrary::onLoad()
 		libEnabled = cvar.getBoolValue();
 			});
 
-	cvarManager->registerCvar("lib_time", "200.0", "Reading Level");
+	cvarManager->registerCvar("lib_time", "1", "Reading Level");
+
+	cvarManager->registerCvar("lib_mode", "time", "Reading Mode");
 
 	cvarManager->registerCvar("bonkers_enabled", "0", "Enable Bonkers", true, true, 0, true, 1)
 		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
@@ -49,18 +51,11 @@ void TheLibrary::OnCustomTrainingLoad(std::string eventName) {
 
 	if (!libEnabled) { return; }
 	
-	string camState;
-	CameraWrapper cam = gameWrapper->GetCamera();
-	if (!cam) { return; }
-	camState = cam.GetCameraState();
-	if (camState != "CameraState_BallCam_TA") {
-		PlayerControllerWrapper input = gameWrapper->GetPlayerController();
-		if (!input) { return; }
-		input.PressSecondaryCamera();
-		input.ReleaseSecondaryCamera();
+	if (ballcamtoggleEnabled) {
+		toggleBallCamOn();
 	}
 		
-	gameWrapper->HookEvent("Function GameEvent_Soccar_TA.ReplayPlayback.BeginState",
+	/*gameWrapper->HookEvent("Function GameEvent_Soccar_TA.ReplayPlayback.BeginState",
 		[this](std::string eventName) {
 			isReplay = true;
 		});
@@ -69,23 +64,35 @@ void TheLibrary::OnCustomTrainingLoad(std::string eventName) {
 		[this](std::string eventName) {
 			isReplay = false;
 		});
-	
+	*/
 	/// Run on car move event
 	gameWrapper->HookEvent("Function TAGame.TrainingEditorMetrics_TA.TrainingShotAttempt",
 		[this](std::string eventName) {
-			CVarWrapper timeCVar = cvarManager->getCvar("lib_time");
-			if (!timeCVar) { return; }
-			float timeDelay = timeCVar.getFloatValue();
-			gameWrapper->SetTimeout([this](GameWrapper* gw) {	
-				disappear();
-				}, timeDelay);
-							
-		});
+			CVarWrapper modeCVar = cvarManager->getCvar("lib_mode");
+			if (!modeCVar) { return; }
+			std::string libMode = modeCVar.getStringValue();
+			if (libMode == "time") {
+				CVarWrapper timeCVar = cvarManager->getCvar("lib_time");
+				if (!timeCVar) { return; }
+				float timeDelay = timeCVar.getFloatValue();
+				gameWrapper->SetTimeout([this](GameWrapper* gw) {
+					disappear();
+					}, timeDelay);
+			}
 
-	///run on car touch ball event
-	gameWrapper->HookEvent("Function TAGame.Ball_TA.OnCarTouch",
-		[this](std::string eventName) {
-			appear();
+			if (libMode == "jump") {
+				gameWrapper->HookEvent("Function TAGame.PlayerController_TA.ToggleJump",
+					[this](std::string eventName) {
+						disappear();
+					});
+
+			}
+			///run on car touch ball event
+			gameWrapper->HookEvent("Function TAGame.Ball_TA.OnCarTouch",
+				[this](std::string eventName) {
+					appear();
+				});
+
 		});
 
 	/// Run on ball explode
@@ -94,7 +101,6 @@ void TheLibrary::OnCustomTrainingLoad(std::string eventName) {
 			appear();			
 		});
 }
-
 
 void TheLibrary::disappear()
 {
@@ -111,17 +117,10 @@ void TheLibrary::disappear()
 		if (!car) { return; }
 		car.SetHidden2(isHidden);
 	}
-	CameraWrapper cam = gameWrapper->GetCamera();
-	if (!cam) { return; }
-	camState = cam.GetCameraState();
-	if (camState == "CameraState_BallCam_TA") {
-		PlayerControllerWrapper input = gameWrapper->GetPlayerController();
-		if (!input) { return; }
-		input.PressSecondaryCamera();
-		input.ReleaseSecondaryCamera();
+	if (ballcamtoggleEnabled) {
+		toggleBallCamOff();
 	}
 }
-
 
 void TheLibrary::appear()
 {
@@ -145,14 +144,36 @@ void TheLibrary::appear()
 			if (!car) { return; }
 			car.SetHidden2(unHidden);
 		}
-		CameraWrapper cam = gameWrapper->GetCamera();
-		if (!cam) { return; }
-		camState = cam.GetCameraState();
-		if (camState != "CameraState_BallCam_TA") {
-			PlayerControllerWrapper input = gameWrapper->GetPlayerController();
-			if (!input) { return; }
-			input.PressSecondaryCamera();
-			input.ReleaseSecondaryCamera();
-			}
+		if (ballcamtoggleEnabled) {
+			toggleBallCamOn();
+		}
 		}
 	}
+
+void TheLibrary::toggleBallCamOn()
+{
+	string camState;
+	CameraWrapper cam = gameWrapper->GetCamera();
+	if (!cam) { return; }
+	camState = cam.GetCameraState();
+	if (camState != "CameraState_BallCam_TA") {
+		PlayerControllerWrapper input = gameWrapper->GetPlayerController();
+		if (!input) { return; }
+		input.PressSecondaryCamera();
+		input.ReleaseSecondaryCamera();
+	}
+}
+
+void TheLibrary::toggleBallCamOff()
+{
+	string camState;
+	CameraWrapper cam = gameWrapper->GetCamera();
+	if (!cam) { return; }
+	camState = cam.GetCameraState();
+	if (camState == "CameraState_BallCam_TA") {
+		PlayerControllerWrapper input = gameWrapper->GetPlayerController();
+		if (!input) { return; }
+		input.PressSecondaryCamera();
+		input.ReleaseSecondaryCamera();
+	}
+}

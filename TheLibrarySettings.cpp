@@ -15,6 +15,19 @@ void TheLibrary::RenderSettings() {
         ImGui::SetTooltip("Toggle The Library");
     }
 
+    CVarWrapper modeCvar = cvarManager->getCvar("lib_mode");
+    if (!modeCvar) { return; }
+    std::string libMode = modeCvar.getStringValue();
+    static int f = 1;
+    std::string timeMode = "time";
+    std::string jumpMode = "jump";
+    if (ImGui::RadioButton("Time Mode", &f, 0)) {
+        modeCvar.setValue(timeMode);
+    }; ImGui::SameLine();
+    if (ImGui::RadioButton("Jump Mode", &f, 1)) {
+        modeCvar.setValue(jumpMode);
+    };
+
     CVarWrapper timeCvar = cvarManager->getCvar("lib_time");
     if (!timeCvar) { return; }
     float timeDelay = timeCvar.getFloatValue();

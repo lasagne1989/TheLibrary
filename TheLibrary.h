@@ -19,5 +19,7 @@ public:
 	void OnCustomTrainingLoad(std::string eventName);
 	void disappear();
 	void appear();
+	void toggleBallCamOn();
+	void toggleBallCamOff();
 
 };
